@@ -84,18 +84,7 @@ def GetAllEvents(sessionHash, locationId):
             creation_time = datetime.datetime.strptime(RecDateTimeGMT,'%Y-%m-%d %I:%M:%S %p').replace(tzinfo=datetime.timezone.utc)
             file = downloadDir + '/'  + datetime.datetime.fromtimestamp(creation_time.timestamp()).strftime('%Y-%m-%d/%H:%M - ') + event.find('{https://services.alarmnet.com/TC2/}Event').text + ' ' + EventRecordId
 
-            fileold = downloadDir + '/' + EventRecordId
-            #fileold = downloadDir + '/'  + creation_time.strftime('%Y-%m-%d') + '/' + EventRecordId
-            if (os.path.isfile(fileold + '.mp4')):
-                os.makedirs(os.path.dirname(file), exist_ok=True)
-                os.rename(fileold + '.mp4', file + '.mp4')
-                os.rename(fileold + '.xml', file + '.xml')
-            
-            if (os.path.isfile(file + '.mp4')):
-                print('{} exists'.format(file + '.mp4'))
-                #os.utime(file, (creation_time.timestamp(), creation_time.timestamp()))
-                #ET.ElementTree(event).write(file + '.xml')
-            else:
+            if not os.path.isfile(file + '.mp4'):
                 if (event.find('{https://services.alarmnet.com/TC2/}EventType').text in ('80003','80007','80008')):
                     activityUrl = GetPartnerVideoURL(sessionHash, locationId, EventRecordId)
                     print('Downloading {}'.format(file + '.mp4'))
